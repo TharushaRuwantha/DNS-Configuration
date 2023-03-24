@@ -9,6 +9,26 @@
 In simpler terms, DNS servers are like the phone book of the internet. They translate human-friendly domain names, such as www.example.com, into machine-friendly IP addresses, such as 192.168.1.1, that are used to identify web servers and other network resources. Without DNS servers, we would have to remember and enter long strings of numbers to access websites and other online services.
 </section>
 
+<h2>Current Configuration
+</h2>
+<table border="2">
+        <tr>
+            <td rowspan="4">Client </td>
+        </tr>
+        <tr>
+            <td>OS</td>
+            <td>Fedora 37</td>
+        </tr>
+        <tr>
+            <td>Netword Adaptors</td>
+            <td>VmNet 2</td>
+        </tr>
+        <tr>
+            <td>IP</td>
+            <td>Automatic (DHCP)</td>
+        </tr>
+    </table>
+
 
 
 <section id="Videos">
@@ -23,7 +43,6 @@ In simpler terms, DNS servers are like the phone book of the internet. They tran
    
      
     
-    '''hello'''
-    
+
  
 </section>
