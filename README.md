@@ -11,25 +11,102 @@ In simpler terms, DNS servers are like the phone book of the internet. They tran
 
 <h2>Current Configuration
 </h2>
-<table border="2">
-        <tr>
-            <td rowspan="4">Client </td>
-        </tr>
-        <tr>
-            <td>OS</td>
-            <td>Fedora 37</td>
-        </tr>
-        <tr>
-            <td>Netword Adaptors</td>
-            <td>VmNet 2</td>
-        </tr>
-        <tr>
-            <td>IP</td>
-            <td>Automatic (DHCP)</td>
-        </tr>
-    </table>
+
+<table>
+<tr>
+<td rowspan="4">Client </td>
+</tr>
+<tr><td>OS</td>
+<td>Fedora 37</td>
+</tr>
+<tr>
+<td>Netword Adaptors</td>
+<td>VmNet 2</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>Automatic (DHCP)</td>
+</tr>
+<tr>
+<td rowspan="4">
+Server
+</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Cent Os 7</td>
+</tr>
+<tr>
+<td>Network Adaptors</td>
+<td>NAT + VmNet2</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>10.0.1.2</td>
+</tr>
+<tr>
+<td rowspan="4">VmNet2</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>10.0.1.0</td>
+</tr>
+<tr>
+<td>Net Mask</td>
+<td>255.255.255.0</td>
+</tr>
+<tr>
+<td>Type</td>
+<td>Host Only</td>
+</tr>
+</table>
 
 
+<h2>Cheat Sheet</h2>
+<h3>Check host name</h3>
+
+```ruby
+hostname -s
+```
+
+<h3>Check the domain name</h3>
+
+```ruby
+hostname -d
+```
+
+<h3>Check the full qualified domain name </h3>
+
+```ruby
+hostname --fqdn
+```
+
+<h3> change the HostName </h3>
+
+```ruby
+nmtui
+```
+and then navigate to Set system hostname and chnage it.
+
+```ruby
+mlb-dlc-centos7.ndm.lk
+```
+
+after you changing the host name you can type 
+
+```ruby
+systemctl restart systemd-hostnamed
+```
+
+then to check whether the changers are hapend you can user 
+```ruby
+//command one
+hostname
+//comand two
+cat /etc/hostname
+//comand three
+cat /etc/sysconfig/network
+```
 
 <section id="Videos">
   <h2>Videos </h2>
