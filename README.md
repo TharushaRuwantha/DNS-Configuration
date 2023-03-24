@@ -65,49 +65,99 @@ Server
 <h2>Cheat Sheet</h2>
 <h3>Check host name</h3>
 
-```ruby
+```
 hostname -s
 ```
 
 <h3>Check the domain name</h3>
 
-```ruby
+```
 hostname -d
 ```
 
 <h3>Check the full qualified domain name </h3>
 
-```ruby
+```
 hostname --fqdn
 ```
 
 <h3> change the HostName </h3>
 
-```ruby
+```
 nmtui
 ```
 and then navigate to Set system hostname and chnage it.
 
-```ruby
+```
 mlb-dlc-centos7.ndm.lk
 ```
 
 after you changing the host name you can type 
 
-```ruby
+```
 systemctl restart systemd-hostnamed
 ```
 
-then to check whether the changers are hapend you can user 
-```ruby
-//command one
+then to check whether the changers are hapend you can user (please copy only the command)
+```
+//command_one
 hostname
-//comand two
+//comand_two
 cat /etc/hostname
-//comand three
+//comand_three
 cat /etc/sysconfig/network
 ```
+![carbon (1)](https://user-images.githubusercontent.com/87405522/227563182-b3fce40d-51b2-470b-8977-8333f5d63c16.png)
 
+<h3>Edit the hosts file</h3>
+
+```
+vi /etc/host
+```
+
+in that file add bellow the current context
+
+```
+10.0.1.2   mlb-dcl-centos7.ndm.lk
+```
+
+<h3>Reboot the system</h3>
+
+```
+reboot
+```
+
+<h3>Stop Other services</h3>
+
+```
+service <service_name> stop
+```
+you can replace <service_name> with dhcpd
+<h3>To confirm service is stop</h3>
+
+```
+systemctl status dhcpd
+```
+if actice : fail or inactive(dead) then your good to go.
+
+<h3>install DNS</h3>
+
+```
+yum install -y bind*
+```
+
+<h3>start the DNS</h3>
+ 
+ ```
+ service named start
+ ```
+ 
+ <h3> To check the status of the DNS </h3>
+ 
+ ```
+ service named status
+ ```
+ 
 <section id="Videos">
   <h2>Videos </h2>
   <ul>
