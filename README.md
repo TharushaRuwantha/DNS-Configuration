@@ -97,79 +97,79 @@ nmtui
 and then navigate to Set system hostname and chnage it.
 
 ```
-mlb-dlc-centos7.ndm.lk
+  mlb-dlc-centos7.ndm.lk
 ```
 
 after you changing the host name you can type 
 
 ```
-systemctl restart systemd-hostnamed
+  systemctl restart systemd-hostnamed
 ```
 
 then to check whether the changers are hapend you can user (please copy only the command)
 ```
-//command_one
-hostname
-//comand_two
-cat /etc/hostname
-//comand_three
-cat /etc/sysconfig/network
+  //command_one
+  hostname
+  //comand_two
+  cat /etc/hostname
+  //comand_three
+  cat /etc/sysconfig/network
 ```
 ![carbon (1)](https://user-images.githubusercontent.com/87405522/227563182-b3fce40d-51b2-470b-8977-8333f5d63c16.png)
 
 <h3>Edit the hosts file</h3>
 
 ```
-vi /etc/host
+  vi /etc/host
 ```
 
 in that file add bellow the current context
 
 ```
-10.0.1.2   mlb-dcl-centos7.ndm.lk
+  10.0.1.2   mlb-dcl-centos7.ndm.lk
 ```
 
 <h3>Reboot the system</h3>
 
 ```
-reboot
+  reboot
 ```
 
 <h3>Stop Other services</h3>
 
 ```
-service <service_name> stop
+  service <service_name> stop
 ```
 you can replace <service_name> with dhcpd
 <h3>To confirm service is stop</h3>
 
 ```
-systemctl status dhcpd
+  systemctl status dhcpd
 ```
 if actice : fail or inactive(dead) then your good to go.
 
 <h3>install DNS</h3>
 
 ```
-yum install -y bind*
+  yum install -y bind*
 ```
 
 <h3>start the DNS</h3>
  
  ```
- service named start
+  service named start
  ```
  
  <h3> To check the status of the DNS </h3>
  
  ```
- service named status
+  service named status
  ```
  
  <h3>Configure named.conf</h3>
  
  ```
- vi /etc/named.conf
+  vi /etc/named.conf
  ```
  
  <h3>in the file </h3>
@@ -192,32 +192,43 @@ yum install -y bind*
  
  ```
     systemctl enable named
+ 
  ```
+ 
  <h3>Check the status of the DNS</h3>
  
  ```
+    
     systemctl status named
+ 
  ```
  
  <h3>add the port</h3>
  
+ 
  ```
+ 
     firewall-cmd --permanent --add-port=53/tcp
+ 
  ```
  
  ```
      firewall-cmd --permanent --add-port=53/udp
+ 
  ```
  
  <h3>Check whether the ports are added</h3>
  
  ```
     firewall-cmd --list-all
+ 
  ```
  
  <h3>Agian goto the named.conf file and Add the zones</h3>
  
+ 
  ```
+ 
  //forward zone
      zone "nmd.lk" IN {
     type master;
@@ -231,24 +242,29 @@ yum install -y bind*
    file "reverse.ndm.lk";
    allow-update { none; };
   };
+ 
  ```
  
  <h3>Create the forward and reverse files</h3>
  First of all go inside the named file
+ 
  ```
      cd /var/named
  ```
  
  <h3>Copy the  named.localhost file as forward.ndm.lk</h3>
+  
   ```
       cp /named.localhost forward.ndm.lk
   ```
   <h3>Do the same to Reverse.ndm.lk</h3>
+  
   ```
       cp /named.localhost reverse.ndm.lk
   ```
   
   <h3>Edit the forward.ndm.lk file</h3>
+  
   ```ruby
   
     $TTL lD
@@ -263,12 +279,16 @@ yum install -y bind*
      mlb-dcl-centos7         IN            A           10.0.1.5
      host                    IN            A           10.0.1.5
      mlb-cli-fedora28        IN            A           10.0.1.3
+  
   ```
+  
   
   <h3>Edit the reverse.ndm.lk file</h3>
   
+  
    ```ruby
-     $TTL lD
+  
+      $TTL lD
       @             IN            SOA mlb-dcl-centos7.ndm.lk.     root.ndm.lk   (
                                       2011071001        ;   serial
                                       3600              ;   refresh
@@ -282,40 +302,52 @@ yum install -y bind*
      mlb-cli-fedora28        IN            A           10.0.1.3
      5                       IN            PTR         mlb-dcl-centos7.ndm.lk.
      3                       IN            PTR         mlb-cli-fedora28.ndm.lk.
+  
   ```
   
   <h3>Chenge the owner</h3>
+  
   ```
       chown root:named forward.ndm.lk
       chown root:named reverse.ndm.lk
   ```
+  
   <h3>Check the errors</h3>
-   ```
+  
+  ```
        named-checkconf -z /etc/named.conf
        named-checkzone forward.ndm.lk /var/named/forward.ndm.lk
        named-checkzone reverse.ndm.lk /var/named/reverse.ndm.lk
    ```
-   <h3>Start the service</h3>
-   ```
+  
+  <h3>Start the service</h3>
+  
+  ```
       systemctl restart named
    ```
    
    <h3>Change the client name</h3>
+  
   ```
       sudo hostnamectl set-hostname --static mlb-cli-fedora28.ndm.lk
   ```
   
   <h3>Open resolv.conf</h3>
+  
   ```
       vi /etc/resolv.conf
   
   ```
+  
   <h3>Edit the file</h3>
+  
   ```
       search mlb-cli-fedora.ndm.lk
       nameserver 10.0.1.5
   ```
+  
   <h3>Ping and check </h3>
+   
    ```
       ping server
       ping mlb-cli-fedora28.ndm.lk
