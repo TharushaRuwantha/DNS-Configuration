@@ -14,7 +14,7 @@ In simpler terms, DNS servers are like the phone book of the internet. They tran
 
 <table>
 <tr>
-<td rowspan="4">Client </td>
+<td rowspan="5">Client </td>
 </tr>
 <tr><td>OS</td>
 <td>Fedora 37</td>
@@ -28,7 +28,11 @@ In simpler terms, DNS servers are like the phone book of the internet. They tran
 <td>Automatic (DHCP)</td>
 </tr>
 <tr>
-<td rowspan="4">
+<td>Host Name</td>
+<td>mlb-cli-fedora28.ndm.lk</td>
+</tr>
+<tr>
+<td rowspan="5">
 Server
 </td>
 </tr>
@@ -43,6 +47,10 @@ Server
 <tr>
 <td>IP</td>
 <td>10.0.1.2</td>
+</tr>
+<tr>
+  <td>Host Name</td>
+  <td>mlb-dcl-centos7.ndm.lk</td>
 </tr>
 <tr>
 <td rowspan="4">VmNet2</td>
@@ -158,18 +166,165 @@ yum install -y bind*
  service named status
  ```
  
-<section id="Videos">
-  <h2>Videos </h2>
-  <ul>
-    <li><a href="#">How to configure DNS in to client server network in vmware (part 3)</a></li>
-    <li><a href="https://youtu.be/cpVDUaY2iSk">How to configure DHCP in to client server network in vmware (part 2)</a></li>
-    <li><a href="https://youtu.be/HVKu4zFpjA0"> How to create Client-Server network using VMware (Part 1)</a></li>
-  </ul>
-  
-   
-   
-     
-    
-
+ <h3>Configure named.conf</h3>
  
+ ```
+ vi /etc/named.conf
+ ```
+ 
+ <h3>in the file </h3>
+ 
+ add the 
+ '<i>listen-on port 53 { 127.0.0.1;</i><b>10.0.1.5;</b> <i>};</i>'
+      .<br>
+      .<br>
+      .<br>
+      .<br>
+ '<i>...localhost;</i> <b>any;</b><i>};</i>'
+ 
+ <h3>start the server</h3>
+ 
+ ```
+    systemctl start named
+ ```
+ 
+ <h3>enable start on system boot</h3>
+ 
+ ```
+    systemctl enable named
+ ```
+ <h3>Check the status of the DNS</h3>
+ 
+ ```
+    systemctl status named
+ ```
+ 
+ <h3>add the port</h3>
+ 
+ ```
+    firewall-cmd --permanent --add-port=53/tcp
+ ```
+ 
+ ```
+     firewall-cmd --permanent --add-port=53/udp
+ ```
+ 
+ <h3>Check whether the ports are added</h3>
+ 
+ ```
+    firewall-cmd --list-all
+ ```
+ 
+ <h3>Agian goto the named.conf file and Add the zones</h3>
+ 
+ ```
+ //forward zone
+     zone "nmd.lk" IN {
+    type master;
+    file "forward.ndm.lk";
+    allow-update { none; };
+ };
+ 
+   //reverse zone
+   zone "1.0.10.in-addr.arpa" IN {
+   type master;
+   file "reverse.ndm.lk";
+   allow-update { none; };
+  };
+ ```
+ 
+ <h3>Create the forward and reverse files</h3>
+ First of all go inside the named file
+ ```
+     cd /var/named
+ ```
+ 
+ <h3>Copy the  named.localhost file as forward.ndm.lk</h3>
+  ```
+      cp /named.localhost forward.ndm.lk
+  ```
+  <h3>Do the same to Reverse.ndm.lk</h3>
+  ```
+      cp /named.localhost reverse.ndm.lk
+  ```
+  
+  <h3>Edit the forward.ndm.lk file</h3>
+  ```ruby
+  
+    $TTL lD
+    @             IN            SOA mlb-dcl-centos7.ndm.lk.     root.ndm.lk   (
+                                     2011071001        ;   serial
+                                     3600              ;   refresh
+                                     1800              ;   retry
+                                     604800            ;   expire
+                                     86400       )     ;   minimum
+     @                       IN            NS           mlb-dcl-centos7.ndm.lk.
+     @                       IN            A           10.0.1.5
+     mlb-dcl-centos7         IN            A           10.0.1.5
+     host                    IN            A           10.0.1.5
+     mlb-cli-fedora28        IN            A           10.0.1.3
+  ```
+  
+  <h3>Edit the reverse.ndm.lk file</h3>
+  
+   ```ruby
+     $TTL lD
+      @             IN            SOA mlb-dcl-centos7.ndm.lk.     root.ndm.lk   (
+                                      2011071001        ;   serial
+                                      3600              ;   refresh
+                                      1800              ;   retry
+                                      604800            ;   expire
+                                      86400       )     ;   minimum
+     @                       IN            NS          mlb-dcl-centos7.ndm.lk.
+     @                       IN            PTR         ndm.lk.
+     mlb-dcl-centos7         IN            A           10.0.1.5
+     host                    IN            A           10.0.1.5
+     mlb-cli-fedora28        IN            A           10.0.1.3
+     5                       IN            PTR         mlb-dcl-centos7.ndm.lk.
+     3                       IN            PTR         mlb-cli-fedora28.ndm.lk.
+  ```
+  
+  <h3>Chenge the owner</h3>
+  ```
+      chown root:named forward.ndm.lk
+      chown root:named reverse.ndm.lk
+  ```
+  <h3>Check the errors</h3>
+   ```
+       named-checkconf -z /etc/named.conf
+       named-checkzone forward.ndm.lk /var/named/forward.ndm.lk
+       named-checkzone reverse.ndm.lk /var/named/reverse.ndm.lk
+   ```
+   <h3>Start the service</h3>
+   ```
+      systemctl restart named
+   ```
+   
+   <h3>Change the client name</h3>
+  ```
+      sudo hostnamectl set-hostname --static mlb-cli-fedora28.ndm.lk
+  ```
+  
+  <h3>Open resolv.conf</h3>
+  ```
+      vi /etc/resolv.conf
+  
+  ```
+  <h3>Edit the file</h3>
+  ```
+      search mlb-cli-fedora.ndm.lk
+      nameserver 10.0.1.5
+  ```
+  <h3>Ping and check </h3>
+   ```
+      ping server
+      ping mlb-cli-fedora28.ndm.lk
+   ```
+  
+  
+<section id="Videos">
+<h2>Videos </h2>
+<ul><li><a href="#">How to configure DNS in to client server network in vmware (part 3)</a></li>
+<li><a href="https://youtu.be/cpVDUaY2iSk">How to configure DHCP in to client server network in vmware (part 2)</a></li>
+<li><a href="https://youtu.be/HVKu4zFpjA0"> How to create Client-Server network using VMware (Part 1)</a></li></ul> 
 </section>
