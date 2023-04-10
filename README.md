@@ -46,7 +46,7 @@ Server
 </tr>
 <tr>
 <td>IP</td>
-<td>10.0.1.2</td>
+<td>10.0.1.5</td>
 </tr>
 <tr>
   <td>Host Name</td>
